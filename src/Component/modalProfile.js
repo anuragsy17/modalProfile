@@ -1,35 +1,27 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Modal from './modal';
+import {fetchData, profileData, viewProfile} from '../Action/action'
+
 
 class ModalProfile extends Component {
     state = {
         data: [],
-        viewProfile: false,
-        id: ''
     }
     componentDidMount() {
-        fetch('https://jsonplaceholder.typicode.com/users')
-            .then(res => res.json())
-            .then(data => this.setState({ ...this.state, data }))
+        this.props.fetchData()
     }
-    viewProfile = (id) => {
-        this.setState({ ...this.state, viewProfile: true, id: id })
-        console.log(id);
-    }
-    close = ()=>{
-        this.setState({ ...this.state, viewProfile: false, id: '' })
-    }
+
     render() {
         return (
             <>
                 {
-                !this.state.viewProfile ? 
                 <div className='user'>
                 <div className='user_details'>
                     {
-                        this.state.data.map((val) => {
+                        this.props.userData.map((val) => {
                             return (
-                                <div onClick={() => { this.viewProfile(val.id) }} className='main_div'>
+                                <div onClick={this.props.viewProfile.bind(this, val.id)} className='main_div'>
                                     <div></div>
                                     <div className='details'>
                                         <h5>{val.name}</h5>
@@ -40,38 +32,25 @@ class ModalProfile extends Component {
                         })
                     }
                 </div>
-            </div>
-                :
-                <div>
-                    
-                    <div className='user'>
-                            <div className='user_details'>
-                                {
-                                    this.state.data.map((val) => {
-                                        return (
-                                            <div className='main_div'>
-                                                <div></div>
-                                                <div className='details'>
-                                                    <h4>{val.name}</h4>
-                                                    <p>{val.email}</p>
-                                                </div>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </div>
-                        </div>
-                        <Modal 
-                        closePopup={this.close}
-                        data={this.state.data}
-                        id={this.state.id}
-                        />
-                </div>
-                
-                }
-            </>
+            </div> }
+            {this.props.showProfile ? <Modal data={this.props.userData}/> : null}
+            </>  
         );
     }
 }
 
-export default ModalProfile;
+const mapStateToProps = state => {
+    return {
+        userData: state.userData,
+        showProfile: state.showProfile,
+    }
+}
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchData: (data) => dispatch(fetchData()),
+        profileData: (data) => dispatch(profileData(data)),
+        viewProfile: (id) => dispatch(viewProfile(id)),
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(ModalProfile)
+//export default ModalProfile;

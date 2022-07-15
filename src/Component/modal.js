@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { viewProfile } from '../Action/action';
 
 class Modal extends Component {
     state = {  } 
     render() { 
-        console.log(this.props.data);
-        console.log(this.props.id);
         return (
             <>
             <div className='modal_container'>
                 <div className='modal'>
-                <button className='close' onClick={this.props.closePopup}>&times;</button>
+                <button className='close' onClick={this.props.viewProfile}>&times;</button>
                     <div className='profile_content'>
                         {
                            this.props.data.map((val)=>{
@@ -41,5 +41,15 @@ class Modal extends Component {
         );
     }
 }
- 
-export default Modal;
+
+const mapStateToProps = state => {
+    return {
+        id: state.id
+    }
+}
+const mapDispatchToProps = dispatch => {
+    return {
+        viewProfile: () => dispatch(viewProfile())
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Modal);
